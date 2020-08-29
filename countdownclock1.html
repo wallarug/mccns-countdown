@@ -7,116 +7,51 @@
 	<!-- Javascript -->
 	<script type='text/javascript' src="js/jquery-2.1.4.min.js"></script>
 	<script type='text/javascript' src="js/jquery.mobile-1.4.5.min.js"></script>
-	<script type="text/javascript">
+    <script>
+    // Set the date we're counting down to
+    var countDownDate = new Date("Sept 25, 2020 09:00:00").getTime();
 
-	// Source: ricocheting.com
+    // Update the count down every 1 second
+    var x = setInterval(function() {
 
+      // Get today's date and time
+      var now = new Date().getTime();
 
-	var CDown = function() {
-		this.state=0;// if initialized
-		this.counts=[];// array holding countdown date objects and id to print to {d:new Date(2013,11,18,18,54,36), id:"countbox1"}
-		this.interval=null;// setInterval object
-	}
+      // Find the distance between now and the count down date
+      var distance = countDownDate - now;
 
-	CDown.prototype = {
-		init: function(){
-			this.state=1;
-			var self=this;
-			this.interval=window.setInterval(function(){self.tick();}, 1000);
-		},
-		add: function(date,id){
-			this.counts.push({d:date,id:id});
-			this.tick();
-			if(this.state==0) this.init();
-		},
-		expire: function(idxs){
-			for(var x in idxs) {
-				this.display(this.counts[idxs[x]], "Now!");
-				this.counts.splice(idxs[x], 1);
-			}
-		},
-		format: function(r){
-			var out="";
-			if(r.d != 0){out += r.d +" "+((r.d==1)?"day":"days")+" ";}
-			out += r.h +" "+((r.h==1)?"h":"h")+" ";
-			out += r.m +" "+((r.m==1)?"m":"m")+" ";
-			out += r.s +" "+((r.s==1)?"s":"s")+" ";
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-			return out.substr(0,out.length-2);
-		},
-		math: function(work){
-			var	y=w=d=h=m=s=ms=0;
+      // Display the result in the element with id="demo"
+      document.getElementById("demo").innerHTML = days + " days </br>" + hours + " h "
+      + checkTime(minutes) + " m " + checkTime(seconds) + " s ";
 
-			ms=(""+((work%1000)+1000)).substr(1,3);
-			work=Math.floor(work/1000);//kill the "milliseconds" so just secs
-
-			y=Math.floor(work/31536000);//years (no leapyear support)
-			w=Math.floor(work/604800);//weeks
-			d=Math.floor(work/86400);//days
-			work=work%86400;
-
-			h=Math.floor(work/3600);//hours
-			work=work%3600;
-
-			m=Math.floor(work/60);//minutes
-			work=work%60;
-
-			s=Math.floor(work);//seconds
-
-			return {y:y,w:w,d:d,h:h,m:m,s:s,ms:ms};
-		},
-		tick: function(){
-			var now=(new Date()).getTime(),
-				expired=[],cnt=0,amount=0;
-
-			if(this.counts)
-			for(var idx=0,n=this.counts.length; idx<n; ++idx){
-				cnt=this.counts[idx];
-				amount=cnt.d.getTime()-now;//calc milliseconds between dates
-
-				// if time is already past
-				if(amount<0){
-					expired.push(idx);
-				}
-				// date is still good
-				else{
-					this.display(cnt, this.format(this.math(amount)));
-				}
-			}
-
-			// deal with any expired
-			if(expired.length>0) this.expire(expired);
-
-			// if no active counts, stop updating
-			if(this.counts.length==0) window.clearTimeout(this.interval);
-			
-		},
-		display: function(cnt,msg){
-			document.getElementById(cnt.id).innerHTML=msg;
-		}
-	};
-
-	window.onload=function(){
-		var cdown = new CDown();
-
-		cdown.add(new Date(2016,10,3,14,00,00), "countbox1");
-	};
-	</script>
-
-	<style>
-		#countbox1 {
-			font-size: 72px;
-			text-align: center;
-			vertical-align: center;
-		}
-	</style>
+      // If the count down is finished, write some text
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("demo").innerHTML = "EXPIRED";
+      }
+    }, 1000);
+    
+    /*
+     *  Helper function for formatting numbers.
+     */
+    function checkTime(i) {
+      if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+      return i;
+    }
+    </script>
 
 </head>
 <body>
     <div data-role="page" data-theme="b" id="demo-page" class="my-page">
 
 	<div data-role="header">
-		<h1>The Clock</h1>
+		<h1>Merger Countdown</h1>
 	</div><!-- /header -->
     
     <div style="background-color: #FFFFFF;">
@@ -124,35 +59,7 @@
     </div>
     
     <p style="text-align:center; font-size:72px;">
-        <span style="font-size:100px" id="timer-countdown">Not configured.</span> </br />
+        <span style="font-size:100px" id="demo"></span> </br />
     </p>
-    
-    
-    
-    <!-- Please update the image file in img/logo.png for your school.  Also change the background from #000000 (white) to your logo's background. -->
-    <!-- <div style="background-color: #FFFFFF;"> -->
-        <!-- <img src="img/logo.png" style="margin:auto; text-align: center; display: block" /> -->
-    <!-- </div> -->
-
-    <!-- begin body -->
-    <div role="main" class="ui-content" style="background-color:#1d1d1d;">
-	<div id="countbox1"></div>
-	<form id="countform1">
-		<label for="hours"> Hours: </label>
-		<input type="text" />
-		<br />
-		
-		<label for="minutes"> Minutes: </label>
-		<input type="text" />
-		<br />
-		
-		<label for="seconds"> Seconds: </label>
-		<input type="text" />
-		<br />
-		
-		<button type="button" onclick="run()"> Go </button>
-
-	</form>
-
 <body>
 </html>
